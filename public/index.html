@@ -632,8 +632,9 @@
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
-        // Configuration
-        const SOCKET_URL = 'http://localhost:3000';
+        // Configuration - Update this to your Render service URL in production
+        // Example: 'https://your-service-name.onrender.com'
+        const SOCKET_URL = window.location.origin;
 
         // Elements
         const chatToggle = document.getElementById('chatToggle');
