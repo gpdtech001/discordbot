@@ -4,9 +4,167 @@ This guide shows you how to add the Discord Support Chat widget to your website.
 
 ## Quick Start
 
-The easiest way to integrate is to copy the complete widget from `public/index.html`. This guide provides step-by-step instructions.
+There are three ways to integrate the chat widget:
 
-## Step 1: Include Socket.io
+1. **PHP Include Method** (Recommended for PHP sites) - Create a separate widget file and include it
+2. **Direct Integration** - Copy the complete widget from `public/index.html`
+3. **Framework Integration** - Use with React, Vue, or other frameworks
+
+This guide covers all methods with step-by-step instructions.
+
+---
+
+## Method 1: PHP Include Integration (Recommended)
+
+This method creates a reusable widget component that can be included on any page.
+
+### Step 1: Create Widget File
+
+Create a file called `chat-widget.php` in your site's root directory (or wherever appropriate):
+
+```php
+<!-- Chat Widget Component -->
+<style>
+    :root {
+        --primary-color: #D4AF37;
+        --primary-hover: #C5A028;
+        --bg-color: #0F172A;
+        --bg-secondary: #05080F;
+        --text-primary: #F3E5AB;
+        --text-secondary: #94A3B8;
+        --border-color: rgba(212, 175, 55, 0.3);
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        --font-serif: 'Playfair Display', serif;
+        --font-sans: 'Inter', sans-serif;
+    }
+
+    /* Chat Widget Button */
+    .chat-widget-button {
+        position: fixed !important;
+        bottom: 2rem !important;
+        right: 2rem !important;
+        width: 64px !important;
+        height: 64px !important;
+        background: var(--primary-color) !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer !important;
+        box-shadow: var(--shadow-lg) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 999999 !important;
+        border: 1px solid var(--border-color) !important;
+    }
+
+    .chat-widget-button:hover {
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: var(--shadow-xl);
+        background: var(--primary-hover) !important;
+    }
+
+    .chat-widget-button svg {
+        width: 32px;
+        height: 32px;
+        fill: var(--bg-secondary);
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 50%;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 6px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        border: 2px solid var(--bg-secondary);
+        transform: scale(0);
+        transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: var(--font-sans);
+    }
+
+    .notification-badge.active {
+        transform: scale(1);
+    }
+
+    /* Chat Widget Container */
+    .chat-widget {
+        position: fixed !important;
+        bottom: calc(2rem + 80px) !important;
+        right: 2rem !important;
+        width: 380px;
+        height: 650px;
+        max-height: calc(100vh - 120px);
+        background: var(--bg-color);
+        border-radius: 16px;
+        box-shadow: var(--shadow-xl);
+        display: none;
+        flex-direction: column;
+        z-index: 999998 !important;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: var(--font-sans);
+    }
+
+    /* ... (See full CSS in repository) ... */
+</style>
+
+<!-- Chat Widget Button -->
+<button class="chat-widget-button" id="chatToggle">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+    </svg>
+    <span class="notification-badge" id="notificationBadge">0</span>
+</button>
+
+<!-- Chat Widget -->
+<div class="chat-widget" id="chatWidget">
+    <!-- Full widget HTML here -->
+</div>
+
+<!-- Load Socket.io from CDN -->
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+<script>
+    // Configuration
+    const SOCKET_URL = 'https://your-service-name.onrender.com';
+    const PROJECT_NAME = 'Your Project Name';
+
+    // ... (Full JavaScript implementation with history and notifications) ...
+</script>
+```
+
+### Step 2: Include in Your Footer/Layout
+
+Add this to your footer template (e.g., `footer.php`):
+
+```php
+<?php
+// Include the chat widget
+include_once 'chat-widget.php';
+?>
+```
+
+---
+
+## Method 2: Direct HTML Integration
+
+For non-PHP sites or single-page integration.
+
+### Step 1: Include Socket.io
 
 Add this before your closing `</body>` tag:
 
@@ -14,9 +172,7 @@ Add this before your closing `</body>` tag:
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 ```
 
-## Step 2: Add the Widget HTML
-
-Add this HTML structure to your page:
+### Step 2: Add the Widget HTML
 
 ```html
 <!-- Chat Widget Button -->
@@ -24,100 +180,23 @@ Add this HTML structure to your page:
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
     </svg>
+    <span class="notification-badge" id="notificationBadge">0</span>
 </button>
 
 <!-- Chat Widget -->
 <div class="chat-widget" id="chatWidget">
-    <div class="chat-header">
-        <div class="chat-header-info">
-            <div class="chat-header-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-            </div>
-            <div class="chat-header-text">
-                <h3>Support Team</h3>
-                <div class="chat-header-status">
-                    <span class="status-dot" id="statusDot"></span>
-                    <span id="statusText">Connecting...</span>
-                </div>
-            </div>
-        </div>
-        <button class="chat-close" id="chatClose">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-    </div>
-
-    <!-- User Details Form -->
-    <div class="user-form-container active" id="userFormContainer">
-        <h2 class="form-title">Hello there! 👋</h2>
-        <p class="form-subtitle">Tell us a bit about yourself and your issue so we can help you right away.</p>
-
-        <form id="userDetailsForm">
-            <div class="form-group">
-                <label for="userName">Your Name <span class="required">*</span></label>
-                <input type="text" id="userName" placeholder="e.g. Alex Smith" required>
-            </div>
-
-            <div class="form-group">
-                <label for="userSubject">How can we help? <span class="required">*</span></label>
-                <textarea id="userSubject" placeholder="Describe your issue..." required></textarea>
-            </div>
-
-            <button type="submit" class="form-submit" id="formSubmit">Start Chat</button>
-        </form>
-    </div>
-
-    <!-- Chat Messages Container -->
-    <div class="chat-messages-container" id="chatMessagesContainer">
-        <div class="ticket-info" id="ticketInfo">
-            Ticket <span class="ticket-number" id="ticketNumber">#loading...</span>
-        </div>
-
-        <div class="chat-messages" id="chatMessages"></div>
-
-        <div class="chat-input-container">
-            <form class="chat-input-form" id="chatForm">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..."
-                    autocomplete="off" disabled>
-                <button type="submit" class="chat-send-button" id="sendButton" disabled>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                </button>
-            </form>
-        </div>
-    </div>
+    <!-- ... (Header, Form, Messages Container) ... -->
+    <!-- See full example for structure -->
 </div>
 ```
 
-## Step 3: Add the CSS Styles
-
-Copy all the CSS from `public/index.html` (the `<style>` section) into your stylesheet or `<style>` tag.
-
-The complete CSS is available in the example file. Key classes:
-- `.chat-widget-button` - The floating chat button
-- `.chat-widget` - The main chat container
-- `.chat-header` - Header with status
-- `.user-form-container` - Initial form
-- `.chat-messages-container` - Chat interface
-- `.chat-message` - Individual messages
-
-## Step 4: Add the JavaScript
-
-Add this script, replacing `SOCKET_URL` with your Render service URL:
+### Step 3: Add the JavaScript
 
 ```javascript
 <script>
     // ===== CONFIGURATION =====
     const SOCKET_URL = 'https://your-service-name.onrender.com';
+    const PROJECT_NAME = 'Your Project Name';
 
     // ===== DOM ELEMENTS =====
     const chatToggle = document.getElementById('chatToggle');
@@ -133,85 +212,130 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
     const statusDot = document.getElementById('statusDot');
     const statusText = document.getElementById('statusText');
     const ticketNumber = document.getElementById('ticketNumber');
+    const notificationBadge = document.getElementById('notificationBadge');
 
     // ===== STATE MANAGEMENT =====
     let socket;
-    let userId = localStorage.getItem('userId') || generateUserId();
-    let ticketId = localStorage.getItem('ticketId') || null;
-    let userDetails = JSON.parse(localStorage.getItem('userDetails') || 'null');
+    let userId = localStorage.getItem('wondersUserId') || generateUserId();
+    let ticketId = localStorage.getItem('wondersTicketId') || null;
+    let userDetails = JSON.parse(localStorage.getItem('wondersUserDetails') || 'null');
+    let unreadCount = 0;
+
+    // ===== CHAT HISTORY =====
+    function getChatHistory() {
+        const history = localStorage.getItem('wondersChatHistory');
+        return history ? JSON.parse(history) : [];
+    }
+
+    function saveChatHistory(history) {
+        localStorage.setItem('wondersChatHistory', JSON.stringify(history));
+    }
+
+    function appendToHistory(messageObj) {
+        const history = getChatHistory();
+        history.push(messageObj);
+        saveChatHistory(history);
+    }
+
+    function clearChatHistory() {
+        localStorage.removeItem('wondersChatHistory');
+    }
+
+    function loadChatHistory() {
+        chatMessages.innerHTML = '';
+        const history = getChatHistory();
+        
+        if (history.length === 0 && !ticketId) return;
+
+        history.forEach(msg => {
+            if (msg.type === 'system') {
+                addSystemMessage(msg.text);
+            } else {
+                addMessage(msg.author || userDetails.name, msg.text, msg.type, msg.timestamp);
+            }
+        });
+    }
 
     function generateUserId() {
         const id = 'user_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('userId', id);
+        localStorage.setItem('wondersUserId', id);
         return id;
     }
 
     // ===== SOCKET CONNECTION =====
     function connectSocket() {
+        if (socket && socket.connected) return;
+
         socket = io(SOCKET_URL, {
-            query: { userId: userId, ticketId: ticketId }
+            query: { userId: userId, ticketId: ticketId },
+            reconnection: true
         });
 
         socket.on('connect', () => {
             console.log('Connected to server');
-            updateStatus('online', 'Connected');
-
-            if (ticketId && userDetails) {
-                showChatInterface();
-            }
+            updateStatus('online', 'Online');
+            if (ticketId && userDetails) showChatInterface();
         });
 
         socket.on('disconnect', () => {
-            console.log('Disconnected from server');
-            updateStatus('offline', 'Disconnected');
+            updateStatus('offline', 'Offline');
             chatInput.disabled = true;
             sendButton.disabled = true;
         });
 
         socket.on('ticketCreated', (data) => {
             ticketId = data.ticketId;
-            localStorage.setItem('ticketId', ticketId);
+            localStorage.setItem('wondersTicketId', ticketId);
             ticketNumber.textContent = `#${ticketId}`;
-
             chatInput.disabled = false;
             sendButton.disabled = false;
 
-            addSystemMessage(`Ticket created! Channel: ${data.channelName}`);
-            addSystemMessage('A support agent will be with you shortly.');
+            const msg1 = `Support ticket created for ${PROJECT_NAME}!`;
+            const msg2 = 'A support agent will be with you shortly.';
+            addSystemMessage(msg1);
+            addSystemMessage(msg2);
+            appendToHistory({ type: 'system', text: msg1, timestamp: new Date().toISOString() });
+            appendToHistory({ type: 'system', text: msg2, timestamp: new Date().toISOString() });
         });
 
         socket.on('messageFromDiscord', (data) => {
             addMessage(data.author, data.message, 'discord', data.timestamp);
+            appendToHistory({ 
+                type: 'discord', 
+                author: data.author, 
+                text: data.message, 
+                timestamp: data.timestamp || new Date().toISOString() 
+            });
+
+            if (!chatWidget.classList.contains('active')) {
+                unreadCount++;
+                updateNotificationBadge();
+            }
         });
 
         socket.on('ticketClosed', (data) => {
-            addSystemMessage(`This ticket has been closed by ${data.closedBy}.`);
-            addSystemMessage('You can close this window or create a new ticket.');
+            const msg = `This ticket has been closed by ${data.closedBy}.`;
+            addSystemMessage(msg);
             chatInput.disabled = true;
             sendButton.disabled = true;
 
             setTimeout(() => {
-                localStorage.removeItem('ticketId');
-                localStorage.removeItem('userDetails');
+                localStorage.removeItem('wondersTicketId');
+                localStorage.removeItem('wondersUserDetails');
+                clearChatHistory();
                 ticketId = null;
                 userDetails = null;
-
                 chatMessages.innerHTML = '';
                 chatMessagesContainer.classList.remove('active');
                 userFormContainer.classList.add('active');
-
                 document.getElementById('userName').value = '';
                 document.getElementById('userSubject').value = '';
-            }, 3000);
+            }, 5000);
         });
 
         socket.on('systemMessage', (message) => {
             addSystemMessage(message);
-        });
-
-        socket.on('error', (error) => {
-            console.error('Socket error:', error);
-            addSystemMessage('Error: ' + error.message);
+            appendToHistory({ type: 'system', text: message, timestamp: new Date().toISOString() });
         });
     }
 
@@ -224,34 +348,27 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
     function showChatInterface() {
         userFormContainer.classList.remove('active');
         chatMessagesContainer.classList.add('active');
-        ticketNumber.textContent = `#${ticketId}`;
-        chatInput.disabled = false;
-        sendButton.disabled = false;
+        ticketNumber.textContent = ticketId ? `#${ticketId}` : '#loading...';
+        if (socket && socket.connected) {
+            chatInput.disabled = false;
+            sendButton.disabled = false;
+        }
+        loadChatHistory();
+    }
+
+    function updateNotificationBadge() {
+        if (unreadCount > 0) {
+            notificationBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+            notificationBadge.classList.add('active');
+        } else {
+            notificationBadge.classList.remove('active');
+        }
     }
 
     function addMessage(author, text, type = 'discord', timestamp = null) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${type === 'user' ? 'user' : ''}`;
-
-        const time = timestamp ? new Date(timestamp) : new Date();
-        const timeString = time.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-
-        const avatar = author.charAt(0).toUpperCase();
-
-        messageDiv.innerHTML = `
-            <div class="message-avatar">${avatar}</div>
-            <div class="message-content">
-                <div class="message-header">
-                    <span class="message-author">${escapeHtml(author)}</span>
-                    <span class="message-time">${timeString}</span>
-                </div>
-                <div class="message-text">${escapeHtml(text)}</div>
-            </div>
-        `;
-
+        // ... (message HTML generation) ...
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -259,16 +376,13 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
     function addSystemMessage(text) {
         const messageDiv = document.createElement('div');
         messageDiv.className = 'chat-message system';
-        messageDiv.innerHTML = `
-            <div class="message-content">
-                <div class="message-text">${escapeHtml(text)}</div>
-            </div>
-        `;
+        // ... (system message HTML generation) ...
         chatMessages.appendChild(messageDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
@@ -277,20 +391,20 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
     // ===== EVENT LISTENERS =====
     chatToggle.addEventListener('click', () => {
         chatWidget.classList.add('active');
+        unreadCount = 0;
+        updateNotificationBadge();
 
         if (userDetails && ticketId) {
+            if (!socket || !socket.connected) connectSocket();
             chatInput.focus();
         } else {
             document.getElementById('userName').focus();
         }
     });
 
-    chatClose.addEventListener('click', () => {
-        chatWidget.classList.remove('active');
-    });
-
     userDetailsForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        e.stopImmediatePropagation(); // Prevent global loader
 
         const name = document.getElementById('userName').value.trim();
         const subject = document.getElementById('userSubject').value.trim();
@@ -300,8 +414,10 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
             return;
         }
 
-        userDetails = { name, subject };
-        localStorage.setItem('userDetails', JSON.stringify(userDetails));
+        if (!socket || !socket.connected) connectSocket();
+
+        userDetails = { name, subject: `[${PROJECT_NAME}] ${subject}` };
+        localStorage.setItem('wondersUserDetails', JSON.stringify(userDetails));
 
         socket.emit('createTicket', {
             userId: userId,
@@ -311,10 +427,8 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
         showChatInterface();
     });
 
-    chatForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    function sendMessage() {
         const message = chatInput.value.trim();
-
         if (message && socket && socket.connected && ticketId) {
             socket.emit('messageFromWebsite', {
                 userId: userId,
@@ -324,8 +438,30 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
             });
 
             addMessage(userDetails.name, message, 'user');
+            appendToHistory({ 
+                type: 'user', 
+                author: userDetails.name, 
+                text: message, 
+                timestamp: new Date().toISOString() 
+            });
+
             chatInput.value = '';
+            chatInput.focus();
         }
+    }
+
+    chatForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        sendMessage();
+        return false;
+    });
+
+    sendButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        sendMessage();
+        return false;
     });
 
     // ===== INITIALIZE =====
@@ -333,171 +469,43 @@ Add this script, replacing `SOCKET_URL` with your Render service URL:
 </script>
 ```
 
-## Customization Options
-
-### Change Colors
-
-Update CSS variables in the `:root` selector:
-
-```css
-:root {
-    --primary-color: #5865F2;      /* Main brand color */
-    --primary-hover: #4752c4;      /* Hover state */
-    --bg-color: #ffffff;            /* Widget background */
-    --text-primary: #111827;        /* Main text color */
-}
-```
-
-### Change Position
-
-Move the button to bottom-left:
-
-```css
-.chat-widget-button {
-    bottom: 2rem;
-    left: 2rem;  /* Change from 'right' to 'left' */
-}
-
-.chat-widget {
-    bottom: calc(2rem + 80px);
-    left: 2rem;  /* Change from 'right' to 'left' */
-}
-```
-
-### Custom Branding
-
-Update the header text and avatar:
-
-```html
-<div class="chat-header-text">
-    <h3>Your Company Support</h3>  <!-- Change this -->
-    <div class="chat-header-status">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">Connecting...</span>
-    </div>
-</div>
-```
-
-### Form Customization
-
-Modify form fields in the `user-form-container`:
-
-```html
-<form id="userDetailsForm">
-    <div class="form-group">
-        <label for="userName">Your Name <span class="required">*</span></label>
-        <input type="text" id="userName" placeholder="John Doe" required>
-    </div>
-
-    <!-- Add custom fields -->
-    <div class="form-group">
-        <label for="userEmail">Email</label>
-        <input type="email" id="userEmail" placeholder="your@email.com">
-    </div>
-
-    <div class="form-group">
-        <label for="userSubject">How can we help? <span class="required">*</span></label>
-        <textarea id="userSubject" placeholder="Describe your issue..." required></textarea>
-    </div>
-
-    <button type="submit" class="form-submit">Start Chat</button>
-</form>
-```
-
-If you add fields, update the JavaScript to capture them:
-
-```javascript
-userDetailsForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById('userName').value.trim();
-    const email = document.getElementById('userEmail').value.trim();
-    const subject = document.getElementById('userSubject').value.trim();
-
-    userDetails = { name, email, subject };
-    // ... rest of code
-});
-```
-
-## Advanced Integration
-
-### React Integration
-
-```jsx
-import { useEffect, useState } from 'react';
-import io from 'socket.io-client';
-
-function ChatWidget() {
-  const [socket, setSocket] = useState(null);
-  const [ticketId, setTicketId] = useState(null);
-
-  useEffect(() => {
-    const newSocket = io('https://your-service-name.onrender.com');
-    setSocket(newSocket);
-
-    return () => newSocket.close();
-  }, []);
-
-  // ... implement rest of the logic
-}
-```
-
-### Vue Integration
-
-```vue
-<template>
-  <div class="chat-widget">
-    <!-- Your chat widget HTML -->
-  </div>
-</template>
-
-<script>
-import io from 'socket.io-client';
-
-export default {
-  data() {
-    return {
-      socket: null,
-      ticketId: null,
-      messages: []
-    }
-  },
-  mounted() {
-    this.socket = io('https://your-service-name.onrender.com');
-    // ... setup event listeners
-  }
-}
-</script>
-```
-
-## Testing Your Integration
-
-1. Open your website with the integrated chat widget
-2. Click the chat button
-3. Fill out the form and submit
-4. Check Discord for the new ticket channel
-5. Send messages from both sides to test real-time sync
-
 ## Troubleshooting
 
-### Widget Not Appearing
+### Common Issues and Solutions
 
-- Check browser console for JavaScript errors
-- Verify Socket.io CDN is loaded
-- Ensure CSS is properly included
+| Issue | Root Cause | Solution |
+|-------|-----------|----------|
+| **Site Loading Animation Triggers** | Form submission bubbles to global handlers | Use `e.stopImmediatePropagation()` in form submit handlers. |
+| **Chat History Lost on Reload** | No persistence mechanism | Implement `localStorage` logic as shown above. |
+| **Scrolling Issues** | Flexbox container overflow | Add `overflow: hidden` to container and `min-height: 0` to message area. |
+| **Widget Not Appearing** | Z-index or display issues | Check `z-index` (should be high, e.g., 999999) and `display: none` default state. |
+| **Connection Drops** | Network issues or server sleep | Implement `reconnection: true` in Socket.io config. |
 
-### Can't Connect to Server
+### Key Fixes Implemented
 
-- Verify `SOCKET_URL` is correct and uses `https://`
-- Check if your Render service is running
-- Check CORS settings if on different domain
+1.  **Global Loader Prevention**:
+    The most critical fix for sites with global loaders is using `e.stopImmediatePropagation()`:
+    ```javascript
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation(); // Stops the event from reaching global listeners
+        // ...
+    });
+    ```
 
-### Messages Not Sending
+2.  **Scroll Optimization**:
+    To ensure the chat messages scroll correctly within the modal:
+    ```css
+    .chat-messages-container {
+        overflow: hidden; /* Constrain children */
+        height: 100%;
+    }
+    .chat-messages {
+        overflow-y: auto;
+        min-height: 0; /* Allow flex child to scroll */
+        height: 100%;
+    }
+    ```
 
-- Check browser console for errors
-- Verify socket connection is established
-- Ensure Discord bot is online
-
-## Support
-
-For issues with integration, refer to the main `README.md` or check the example in `public/index.html`.
+3.  **Chat History Persistence**:
+    We now use `localStorage` to save messages (`wondersChatHistory`) and restore them when the widget loads. This ensures users don't lose context if they refresh the page.
